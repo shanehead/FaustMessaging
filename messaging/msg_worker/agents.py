@@ -1,6 +1,6 @@
 import faust
 
-from messaging.app import app, p
+from messaging.app import app, p, CONCURRENCY
 from messaging.api.agents import EventApi, event_api
 
 
@@ -12,10 +12,12 @@ class Message(faust.Record):
 message_topic = app.topic('message', value_type=Message)
 
 
-@app.agent(message_topic)
+@app.agent(message_topic, use_reply_headers=True, concurrency=CONCURRENCY)
 async def message(stream):
+    count = 0
     async for data in stream:
-        p(f'Received: data={data}')
+        count += 1
+        p(f'[message]({count}) Received: data={data}')
         data.event.update(data.data)
         payload = {'url': 'http://example.com',
                    'json_data': data}

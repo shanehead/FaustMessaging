@@ -9,10 +9,11 @@ msg = Message(event=event, data=data)
 
 
 async def send() -> None:
-    p('Sending')
-    await message.send(value=msg)
+    for i in range(1000):
+        p('Sending')
+        await message.send(value=msg)
+    await asyncio.sleep(2.0)
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(send())
+    asyncio.run(send())
